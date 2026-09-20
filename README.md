@@ -79,7 +79,8 @@ Dentro de src se separan las responsabilidades del programa en diferentes módul
 
 model/: contiene la lógica de negocio y los cálculos financieros.
 view/console/: contiene la interfaz de usuario por consola.
-Esta separación permite modificar la lógica de cálculo sin tener que modificar directamente la forma en que el usuario interactúa con la aplicación.
+view/gui/: contiene la interfaz de usuario gráfica (Kivy).
+Esta separación permite modificar la lógica de cálculo sin tener que modificar directamente la forma en que el usuario interactúa con la aplicación. La consola y la interfaz gráfica comparten la misma lógica (model).
 
 # src/model/
 
@@ -94,7 +95,7 @@ meta: valor que se desea alcanzar al finalizar el plan de ahorro.
 tasa_interes: tasa de interés periódica expresada en decimal.
 periodos: número de meses o períodos del plan.
 abono_extra: valor opcional que se agrega en la última cuota.
-La función calcular_cuota() valida los datos recibidos y calcula la cuota periódica necesaria para alcanzar la meta.
+La función calcular_cuota() valida los datos recibidos y calcula la cuota periódica necesaria para alcanzar la meta. También existe la función calcular_cuota() a nivel de módulo, que delega en la clase CalculadoraAhorro y es usada tanto por la consola como por la interfaz gráfica.
 
 La fórmula utilizada es:
 
@@ -135,6 +136,22 @@ Mostrar el total de intereses generados.
 Mostrar el saldo final esperado.
 El archivo también captura excepciones para mostrar mensajes de error cuando los datos ingresados no cumplen las validaciones.
 
+# src/view/gui/
+
+Esta carpeta contiene la interfaz de usuario gráfica de la aplicación desarrollada con Kivy.
+
+main.py
+Es el punto de entrada de la interfaz gráfica.
+
+Su función es:
+
+Mostrar un formulario con la meta de ahorro, la tasa de interés periódica (en %), el número de periodos y el abono extra opcional.
+Ejecutar los cálculos usando la misma lógica de src/model/logica_calculadora.py.
+Mostrar la cuota mensual requerida, el total aportado, el total de intereses generados y el saldo final.
+Mostrar la tabla de acumulación periodo a periodo.
+Mostrar mensajes de error amigables cuando los datos no cumplen las validaciones.
+Usa la misma lógica que la consola, por lo que ambas interfaces comparten el modelo.
+
 # test/
 
 Esta carpeta contiene las pruebas automatizadas del proyecto.
@@ -165,6 +182,7 @@ En este proyecto se encuentran en:
 
 src/model/__init__.py
 src/view/console/__init__.py
+src/view/gui/__init__.py
 test/__init__.py
 
 # .gitignore
@@ -208,7 +226,26 @@ python src/view/console/main.py
 
 La aplicación solicitará los datos necesarios y mostrará los resultados del cálculo.
 
-En resumen: cualquier equipo con Python instalado puede descargar el repositorio, ingresar a la carpeta del proyecto y ejecutar main.py. El proyecto no requiere instalar dependencias externas.
+En resumen: cualquier equipo con Python instalado puede descargar el repositorio, ingresar a la carpeta del proyecto y ejecutar main.py. La interfaz de consola no requiere instalar dependencias externas.
+
+# correr en interfaz grafica (Kivy)
+
+La interfaz gráfica requiere instalar Kivy (compatible con Python 3.8 a 3.13).
+
+Instalar la dependencia (desde la carpeta raíz del proyecto):
+
+python -m pip install -r requirements.txt
+
+Ejecutar la aplicación:
+
+python src/view/gui/main.py
+
+La ventana solicita la meta de ahorro, la tasa de interés periódica (en %), el
+número de periodos y, opcionalmente, un abono extra en la última cuota. Al
+presionar Calcular muestra la cuota mensual, los totales y la tabla de acumulación.
+
+En resumen: cualquier equipo con Python y Kivy instalados puede ejecutar la
+interfaz gráfica con el mismo comando, desde cualquier carpeta.
 
 
 # correr pruebas unitarias

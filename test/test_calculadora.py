@@ -160,5 +160,83 @@ class TestLogicaAhorro(unittest.TestCase):
         with self.assertRaises(logica_calculadora.AbonoExtraInvalido):
             logica_calculadora.CalculadoraAhorro(meta, tasa, plazo, abono_extra).calcular_cuota()
 
+    def test_funcion_compartida_calcular_cuota(self):
+
+        # La funcion a nivel de modulo debe coincidir con la clase (logica compartida)
+        meta = 20000000
+        tasa = 0.02
+        plazo = 18
+        abono_extra = 2000000
+
+        cuota_clase = logica_calculadora.CalculadoraAhorro(
+            meta, tasa, plazo, abono_extra
+        ).calcular_cuota()
+        cuota_funcion = logica_calculadora.calcular_cuota(
+            meta, tasa, plazo, abono_extra
+        )
+
+        self.assertAlmostEqual(cuota_clase, cuota_funcion, 10)
+
+    def test_funcion_compartida_con_abono_por_defecto(self):
+
+        # Sin pasar el abono extra, por defecto es 0
+        meta = 10000000
+        tasa = 0.015
+        plazo = 12
+
+        cuota_esperada = 766799.93
+        cuota_calculada = logica_calculadora.calcular_cuota(meta, tasa, plazo)
+
+        self.assertAlmostEqual(cuota_esperada, cuota_calculada, 2)
+
+    def test_funcion_compartida_valida_datos(self):
+
+        # La funcion compartida tambien debe lanzar las excepciones de validacion
+        with self.assertRaises(logica_calculadora.MetaInvalida):
+            logica_calculadora.calcular_cuota(0, 0.015, 12, 0)
+
+        with self.assertRaises(logica_calculadora.TasaInteresInvalida):
+            logica_calculadora.calcular_cuota(10000000, 0, 12, 0)
+
+        with self.assertRaises(logica_calculadora.PeriodosInvalidos):
+            logica_calculadora.calcular_cuota(10000000, 0.015, 3.5, 0)
+
+        with self.assertRaises(logica_calculadora.AbonoExtraInvalido):
+            logica_calculadora.calcular_cuota(10000000, 0.015, 12, 10000000)
+
+    def test_tabla_acumulacion_termina_en_meta(self):
+
+        # Con abono extra, el saldo final de la tabla debe ser aproximadamente la meta
+        meta = 20000000
+        tasa = 0.02
+        plazo = 18
+        abono_extra = 2000000
+
+        tabla = logica_calculadora.generar_tabla_acumulacion(
+            meta, tasa, plazo, abono_extra
+        )
+
+        self.assertAlmostEqual(
+            meta, tabla[-1]["saldo_final"], 2
+        )
+
+    def test_tabla_solo_suma_abono_en_ultimo_periodo(self):
+
+        # El abono extra no debe sumarse en periodos anteriores al ultimo
+        meta = 20000000
+        tasa = 0.02
+        plazo = 18
+        abono_extra = 2000000
+
+        tabla = logica_calculadora.generar_tabla_acumulacion(
+            meta, tasa, plazo, abono_extra
+        )
+
+        # Ningun periodo anterior al ultimo registra abono extra
+        for fila in tabla[:-1]:
+            self.assertEqual(fila["abono_extra"], 0.0)
+
+        self.assertEqual(tabla[-1]["abono_extra"], abono_extra)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

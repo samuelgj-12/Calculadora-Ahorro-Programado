@@ -1,8 +1,9 @@
 import sys
-sys.path.append("src")  
+sys.path.append("src")
 
 
 from model import logica_calculadora
+
 
 def leer_datos_usuario():
     print("Este programa le permite calcular la cuota mensual a ahorrar")
@@ -66,19 +67,36 @@ def imprimir_tabla(tabla):
 def imprimir_totales(totales):
     print(f"\nTotal aportado: {round(totales['total_aportado'], 2)}")
     print(f"Total de interés generado: {round(totales['total_interes'], 2)}")
-    print(f"Saldo final : {round(totales['saldo_final'], 2)}")
+    print(f"Saldo final: {round(totales['saldo_final'], 2)}")
 
 
-try:
-    datos = leer_datos_usuario()
+def main():
+    try:
+        datos = leer_datos_usuario()
+    except ValueError as error:
+        print("\nDato inválido: ingrese valores numéricos válidos.")
+        print(str(error))
+        return
 
-    cuota, tabla, totales = calcular_resultado(datos)
+    try:
+        cuota, tabla, totales = calcular_resultado(datos)
+    except (
+        logica_calculadora.MetaInvalida,
+        logica_calculadora.TasaInteresInvalida,
+        logica_calculadora.PeriodosInvalidos,
+        logica_calculadora.AbonoExtraInvalido,
+    ) as error:
+        print(f"\n{error}")
+        return
+    except Exception as error:
+        print(f"\nNo se pudo calcular la cuota: {error}")
+        return
 
     print(f"\nLa cuota mensual de ahorro requerida es de: {cuota}")
 
     imprimir_tabla(tabla)
     imprimir_totales(totales)
 
-except Exception as error:
-    print("No se pudo calcular la cuota")
-    print(str(error))
+
+if __name__ == "__main__":
+    main()
