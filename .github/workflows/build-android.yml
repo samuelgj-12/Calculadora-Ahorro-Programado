@@ -22,7 +22,13 @@ on:
 jobs:
   android:
     name: APK de Android
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+
+    env:
+      # Hace que autoreconf encuentre las macros de Libtool (libtool.m4),
+      # resolviendo "possibly undefined macro: LT_SYS_SYMBOL_USCORE".
+      ACLOCAL_PATH: /usr/share/aclocal
+
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +47,11 @@ jobs:
             zlib1g-dev libncurses5-dev libffi-dev \
             libjpeg-dev wget
 
+          # Hacer explicitamente visibles las macros de Libtool para autoconf.
+          test -f /usr/share/aclocal/libtool.m4
+          echo "ACLOCAL_PATH=$ACLOCAL_PATH"
+          aclocal --print-ac-dir
+
       - name: Instalar Buildozer, Python-for-Android y Cython
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -50,6 +61,11 @@ jobs:
             "buildozer==1.5.0" \
             "python-for-android==2024.1.21"
           cython --version
+
+      - name: Limpiar compilaciones parciales
+        run: |
+          rm -rf .buildozer
+          rm -rf ~/.buildozer/android/platform/build-*
 
       - name: Compilar APK
         run: buildozer -v android debug
