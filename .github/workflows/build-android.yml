@@ -52,6 +52,17 @@ jobs:
           echo "ACLOCAL_PATH=$ACLOCAL_PATH"
           aclocal --print-ac-dir
 
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Verificar Java
+        run: |
+          java -version
+          echo "JAVA_HOME=$JAVA_HOME"
+
       - name: Instalar Buildozer, Python-for-Android y Cython
         run: |
           python -m pip install --upgrade pip setuptools wheel
