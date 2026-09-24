@@ -32,6 +32,12 @@ version = 1.0.0
 # una version nueva (p.ej. 3.14) que rompa el build de forma impredecible.
 requirements = python3==3.11.9,kivy
 
+# (str) Version (etiqueta git) de Python-for-Android que usa Buildozer.
+# Debe coincidir con la que se instala en el workflow (python-for-android 2024.1.21)
+# y con la version de Python fijada arriba, para que python3 y hostpython3
+# no queden desincronizados (3.11.9 != 3.14.2).
+p4a.branch = v2024.01.21
+
 # (str) Orientacion de la aplicacion: portrait, landscape o sensor
 orientation = portrait
 
