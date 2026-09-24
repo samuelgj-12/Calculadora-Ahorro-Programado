@@ -27,8 +27,10 @@ source.main = src/main.py
 # (str) Version de la aplicacion
 version = 1.0.0
 
-# (list) Recetas de Python que se compilan dentro del APK
-requirements = python3,kivy
+# (list) Recetas de Python que se compilan dentro del APK.
+# La version de Python se fija para que Python-for-Android no elija
+# una version nueva (p.ej. 3.14) que rompa el build de forma impredecible.
+requirements = python3==3.11.9,kivy
 
 # (str) Orientacion de la aplicacion: portrait, landscape o sensor
 orientation = portrait
