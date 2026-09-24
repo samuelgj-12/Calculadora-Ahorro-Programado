@@ -1,0 +1,53 @@
+# =====================================================================
+#  EMPAQUETADO PARA ANDROID (.apk)
+#
+#  Este proyecto se compila en Windows, donde Buildozer no funciona.
+#  Por eso este flujo compila el APK en la nube (runner de Linux con
+#  Buildozer) y deja el archivo listo para instalar en el celular.
+#
+#  EJECUTAR: pestaña Actions > "Compilar APK Android" > Run workflow.
+#  (Tambien corre automaticamente al publicar una etiqueta v*).
+#
+#  Los cambios fueron SOLO agregados: el codigo de la app no se modifico.
+# =====================================================================
+
+name: Compilar APK Android
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  android:
+    name: APK de Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias del sistema para Buildozer
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip git zip unzip \
+            openjdk-17-jdk ccache \
+            autoconf libtool pkg-config \
+            zlib1g-dev libncurses5-dev libffi-dev \
+            libjpeg-dev wget
+
+      - name: Instalar Buildozer
+        run: python -m pip install --upgrade buildozer
+
+      - name: Compilar APK
+        run: buildozer -v android debug
+
+      - name: Subir APK como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculadora-ahorro-android-apk
+          path: bin/*.apk
