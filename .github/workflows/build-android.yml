@@ -34,7 +34,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            python3-pip git zip unzip \
+            python3-pip python3-venv git zip unzip \
             openjdk-17-jdk ccache \
             autoconf libtool pkg-config \
             zlib1g-dev libncurses5-dev libffi-dev \

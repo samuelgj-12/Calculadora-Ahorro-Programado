@@ -40,6 +40,10 @@ fullscreen = 0
 # (list) Arquitecturas del APK
 android.archs = arm64-v8a
 
+# (bool) Acepta automaticamente las licencias del SDK de Android
+# (necesario en CI / GitHub Actions, donde no hay nadie para responder "y")
+android.accept_sdk_license = True
+
 # (int) Nivel de API de Android con el que se compila
 android.api = 33
 
